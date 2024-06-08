@@ -1,0 +1,40 @@
+{
+  "name": "laravel",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": {
+    "name": "Gene Alyson Fortunado Torcende",
+    "email": "genealyson.torcende@gmail.com"
+  },
+  "keywords": [
+    "local-addon",
+    "laravel"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kermage/local-addon-laravel"
+  },
+  "productName": "Laravel",
+  "renderer": "dist/renderer.js",
+  "main": "dist/main.js",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@getflywheel/local": "^9.0.3",
+    "@types/fs-extra": "^11.0.4",
+    "@types/react": "^18.3.3",
+    "electron": "^30.1.1",
+    "prettier": "^3.3.2",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@getflywheel/local-components": "^17.8.0",
+    "fs-extra": "^11.2.0",
+    "lodash": "^4.17.21",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.23.1"
+  }
+}
