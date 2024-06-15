@@ -1,5 +1,11 @@
 import { ipcAsync, sendIPCEvent } from '@getflywheel/local/renderer';
 import { ipcRenderer } from 'electron';
+import {
+	NewSiteEnvironment,
+	RadioOptions,
+	RenderBreadcrumbs,
+	RoutesArray,
+} from './filters';
 
 import type { AddonRendererContext } from '@getflywheel/local/renderer';
 
@@ -13,4 +19,12 @@ export default function (context: AddonRendererContext) {
 		});
 		sendIPCEvent('ping', { data: Date.now() });
 	});
+
+	hooks.addFilter('CreateSite:RadioOptions', RadioOptions);
+
+	hooks.addFilter('AddSiteIndexJS:RoutesArray', RoutesArray);
+
+	hooks.addFilter('AddSiteIndexJS:NewSiteEnvironment', NewSiteEnvironment);
+
+	hooks.addFilter('AddSiteIndexJS:RenderBreadcrumbs', RenderBreadcrumbs);
 }
