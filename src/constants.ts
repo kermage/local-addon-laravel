@@ -1,7 +1,11 @@
 import { readJSONSync } from 'fs-extra';
 import { join } from 'path';
 
-const packageJSON = readJSONSync(join(__dirname, '..', 'package.json'));
+import type { Package } from './types';
+
+export const packageJSON: Package = readJSONSync(
+	join(__dirname, '..', 'package.json'),
+);
 
 const ADDON_ID = packageJSON.name;
 const ROUTE_KEY = 'add-site';

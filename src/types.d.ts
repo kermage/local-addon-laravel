@@ -1,6 +1,12 @@
 import type { SiteSettings } from '@getflywheel/local/renderer';
 import type { ReactElement } from 'react';
 
+export interface Package {
+	name: string;
+	version: string;
+	productName: string;
+}
+
 export interface Route {
 	key: string;
 	path: string;

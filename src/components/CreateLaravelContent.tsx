@@ -11,12 +11,15 @@ import {
 } from '@getflywheel/local-components';
 import { sendIPCEvent } from '@getflywheel/local/renderer';
 
-import type { NewSiteInfo } from '@getflywheel/local';
+import type { NewSiteDefaults, NewSiteInfo } from '@getflywheel/local';
 import type { History } from '../types';
 
-import { LARAVEL_CREATE_EVENT, LARAVEL_CREATE_KEY } from '../constants';
+import { LARAVEL_CREATE_EVENT } from '../constants';
 
 interface Props {
+	defaultLocalSettings: {
+		'new-site-defaults': NewSiteDefaults;
+	};
 	siteSettings: NewSiteInfo;
 	history: History;
 }
@@ -49,9 +52,13 @@ export default function (props: Props) {
 	function addSite() {
 		addSiteButtonRef.current?.setAttribute('disabled', 'true');
 		addSiteButtonRef.current?.setAttribute('aria-disabled', 'true');
-		sendIPCEvent(LARAVEL_CREATE_KEY, {
-			selected,
-			siteSettings: props.siteSettings,
+		sendIPCEvent('addSite', {
+			newSiteInfo: props.siteSettings,
+			wpCredentials: {
+				adminEmail:
+					props.defaultLocalSettings['new-site-defaults'].adminEmail,
+			},
+			goToSite: true,
 		});
 	}
 
