@@ -41,7 +41,7 @@ export function RoutesArray(routes: Route[], path: string) {
 }
 
 export function NewSiteEnvironment(environment: Environment) {
-	if (environment.siteSettings?.customOptions?.useLaravel) {
+	if (environment.siteSettings.asLaravel) {
 		environment.onContinue = () => {
 			environment.history.push(LARAVEL_CREATE_PATH);
 		};
@@ -60,13 +60,10 @@ export function RenderBreadcrumbs(breadcrumbs: Breadcrumbs) {
 	} = breadcrumbs;
 
 	if (pathname === ADDSITE_CREATE_PATH) {
-		siteSettings.customOptions = {
-			...siteSettings.customOptions,
-			useLaravel: true,
-		};
+		siteSettings.asLaravel = true;
 	}
 
-	if (siteSettings?.customOptions?.useLaravel) {
+	if (siteSettings.asLaravel) {
 		const stepper = defaultStepper();
 		const sChildren = stepper.props.children;
 

@@ -12,7 +12,7 @@ import {
 import { sendIPCEvent } from '@getflywheel/local/renderer';
 
 import type { NewSiteDefaults, NewSiteInfo } from '@getflywheel/local';
-import type { History } from '../types';
+import type { CustomSite, History, LaravelSettings } from '../types';
 
 import { LARAVEL_CREATE_EVENT } from '../constants';
 
@@ -20,7 +20,7 @@ interface Props {
 	defaultLocalSettings: {
 		'new-site-defaults': NewSiteDefaults;
 	};
-	siteSettings: NewSiteInfo;
+	siteSettings: NewSiteInfo & CustomSite<LaravelSettings>;
 	history: History;
 }
 
@@ -77,6 +77,7 @@ export default function (props: Props) {
 
 	useEffect(() => {
 		selected = { starterKit, testFramework };
+		props.siteSettings.asLaravel = selected;
 	}, [starterKit, testFramework]);
 
 	return (

@@ -19,10 +19,19 @@ export interface History {
 	goBack: () => void;
 }
 
+export interface CustomSite<Type> {
+	asLaravel?: Type;
+}
+
+export interface LaravelSettings {
+	starterKit: string;
+	testFramework: string;
+}
+
 export interface Environment {
 	onContinue: () => void;
 	onGoBack: () => void;
-	siteSettings: SiteSettings;
+	siteSettings: SiteSettings & CustomSite<boolean>;
 	buttonText: string;
 	history: History;
 }
@@ -30,5 +39,5 @@ export interface Environment {
 export interface Breadcrumbs {
 	defaultStepper: () => ReactElement;
 	localHistory: History;
-	siteSettings: SiteSettings;
+	siteSettings: SiteSettings & CustomSite<boolean>;
 }

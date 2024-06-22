@@ -10,6 +10,7 @@ import Service from './Service';
 
 import type { NewSiteInfo, Site } from '@getflywheel/local';
 import type { AddonMainContext } from '@getflywheel/local/main';
+import type { CustomSite, LaravelSettings } from './types';
 
 import {
 	LARAVEL_CREATE_EVENT,
@@ -44,8 +45,11 @@ export default function (context: AddonMainContext): void {
 
 	HooksMain.addFilter(
 		'modifyAddSiteObjectBeforeCreation',
-		(site: Site, newSiteInfo: NewSiteInfo) => {
-			if (newSiteInfo?.customOptions?.useLaravel) {
+		(
+			site: Site,
+			newSiteInfo: NewSiteInfo & CustomSite<LaravelSettings>,
+		) => {
+			if (newSiteInfo.asLaravel) {
 				site.services = {
 					...site.services,
 					laravel: {
