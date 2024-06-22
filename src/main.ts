@@ -46,10 +46,11 @@ export default function (context: AddonMainContext): void {
 	HooksMain.addFilter(
 		'modifyAddSiteObjectBeforeCreation',
 		(
-			site: Site,
+			site: Site & CustomSite<LaravelSettings>,
 			newSiteInfo: NewSiteInfo & CustomSite<LaravelSettings>,
 		) => {
 			if (newSiteInfo.asLaravel) {
+				site.asLaravel = newSiteInfo.asLaravel;
 				site.services = {
 					...site.services,
 					laravel: {

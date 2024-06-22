@@ -1,4 +1,5 @@
 import { execFile } from 'child_process';
+import DotEnv from 'dotenv-extra';
 import { remove, rename } from 'fs-extra';
 import { join } from 'path';
 import { promisify } from 'util';
@@ -83,9 +84,35 @@ export default class extends LightningService {
 		try {
 			const appDir = join(this._site.path, 'app');
 			const laraDir = join(this._site.path, 'laravel');
+			const dotEnv = new DotEnv(join(laraDir, '.env'));
+			const commands = [
+				`mysql -e "CREATE USER 'root'@'127.0.0.1' IDENTIFIED BY 'root'; GRANT ALL ON *.* TO 'root'@'127.0.0.1';"`,
+				'cd ..',
+				'php artisan migrate',
+			];
+
+			dotEnv.upsert('APP_NAME', this._site.name);
+			dotEnv.upsert('APP_URL', this._site.url);
+			dotEnv.upsert('DB_CONNECTION', 'mysql');
+			dotEnv.upsert('DB_DATABASE', this._site.mysql?.database!);
+			dotEnv.upsert('DB_USERNAME', this._site.mysql?.user!);
+			dotEnv.upsert('DB_PASSWORD', this._site.mysql?.password!);
+			dotEnv.upsert('DB_PORT', this._site.services?.mysql?.ports?.MYSQL);
+			dotEnv.upsert('MAIL_MAILER', 'smtp');
+			dotEnv.upsert('MAIL_FROM_ADDRESS', `"hello@${this._site.domain}"`);
+			dotEnv.upsert(
+				'MAIL_PORT',
+				this._site.services?.mailpit?.ports?.SMTP,
+			);
+			dotEnv.save();
 
 			await remove(appDir);
 			await rename(laraDir, appDir);
+			sendIPCEvent(
+				'siteShellEntry:launch',
+				this._site,
+				commands.join('\n'),
+			);
 		} catch (e: unknown) {
 			const error = e as Error;
 
