@@ -10,9 +10,11 @@ import {
 	sendIPCEvent,
 } from '@getflywheel/local/main';
 
+import type { Site } from '@getflywheel/local';
 import type { Services } from '@getflywheel/local/main';
 
 import { packageJSON } from './constants';
+import { CustomSite, LaravelSettings } from './types';
 
 export default class extends LightningService {
 	readonly serviceName: string = packageJSON.name;
@@ -50,6 +52,67 @@ export default class extends LightningService {
 		);
 	}
 
+	composerArgs(commands: string[]) {
+		return [
+			join(
+				process.resourcesPath,
+				'extraResources',
+				'bin',
+				'composer',
+				'composer.phar',
+			),
+			...commands,
+		];
+	}
+
+	async installOptions(
+		phpBin: string,
+		site: Site & CustomSite<LaravelSettings>,
+	) {
+		if (
+			!site.asLaravel?.starterKit ||
+			site.asLaravel.starterKit === 'none'
+		) {
+			return;
+		}
+
+		const PACKAGE_COMMANDS = {
+			breeze: ['require', 'laravel/breeze', '--dev'],
+			jetstream: ['require', 'laravel/jetstream'],
+		};
+
+		await promisify(execFile).apply(null, [
+			phpBin,
+			this.composerArgs(
+				PACKAGE_COMMANDS[
+					site.asLaravel.starterKit as keyof typeof PACKAGE_COMMANDS
+				],
+			),
+			{
+				cwd: join(this._site.path, 'laravel'),
+				shell: false,
+			},
+		] as const);
+
+		await promisify(execFile).apply(null, [
+			process.env.SHELL!,
+			[
+				'-lc',
+				[
+					`"${phpBin}"`,
+					'artisan',
+					`${site.asLaravel.starterKit}:install`,
+					site.asLaravel.stack,
+					site.asLaravel.testFramework === 'pest' ? '--pest' : '',
+				].join(' '),
+			],
+			{
+				cwd: join(this._site.path, 'laravel'),
+				shell: false,
+			},
+		] as const);
+	}
+
 	async provision(): Promise<void> {
 		this.setMessage('Provisioning');
 
@@ -58,22 +121,14 @@ export default class extends LightningService {
 
 		await promisify(execFile).apply(null, [
 			cliInfo['PHP binary'],
-			[
-				join(
-					process.resourcesPath,
-					'extraResources',
-					'bin',
-					'composer',
-					'composer.phar',
-				),
-				'create-project',
-				'laravel/laravel',
-			],
+			this.composerArgs(['create-project', 'laravel/laravel']),
 			{
 				cwd: this._site.path,
 				shell: false,
 			},
 		] as const);
+
+		await this.installOptions(cliInfo['PHP binary'], this._site);
 	}
 
 	async finalizeNewSite() {
