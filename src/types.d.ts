@@ -26,6 +26,7 @@ export interface CustomSite<Type> {
 export interface LaravelSettings {
 	starterKit: string;
 	testFramework: string;
+	stack: string;
 }
 
 export interface Environment {

@@ -35,9 +35,25 @@ const testFrameworks = {
 	pest: 'Pest',
 };
 
+const stacks = {
+	breeze: {
+		blade: 'Blade with Alpine',
+		livewire: 'Livewire (Volt Class API) with Alpine',
+		'livewire-functional': 'Livewire (Volt Functional API) with Alpine',
+		react: 'React with Inertia',
+		vue: 'Vue with Inertia',
+		api: 'API only',
+	},
+	jetstream: {
+		livewire: 'Livewire',
+		inertia: 'Vue with Inertia',
+	},
+};
+
 let selected = {
 	starterKit: 'none',
 	testFramework: 'phpunit',
+	stack: '',
 };
 
 export default function (props: Props) {
@@ -48,6 +64,8 @@ export default function (props: Props) {
 	const [testFramework, updateTestFramework] = useState(
 		selected.testFramework,
 	);
+	const [stack, updateStack] = useState(selected.stack);
+	const [stackOptions, updateStackOptions] = useState({});
 
 	function addSite() {
 		addSiteButtonRef.current?.setAttribute('disabled', 'true');
@@ -76,9 +94,23 @@ export default function (props: Props) {
 	}, []);
 
 	useEffect(() => {
-		selected = { starterKit, testFramework };
+		if ('none' === starterKit) {
+			return;
+		}
+
+		const stackOptions = stacks[starterKit as keyof typeof stacks];
+
+		updateStackOptions(stackOptions);
+
+		if (!(stack in stackOptions)) {
+			updateStack(Object.keys(stackOptions)[0]);
+		}
+	}, [starterKit]);
+
+	useEffect(() => {
+		selected = { starterKit, testFramework, stack };
 		props.siteSettings.asLaravel = selected;
-	}, [starterKit, testFramework]);
+	}, [starterKit, testFramework, stack]);
 
 	return (
 		<div className="AddSiteContent">
@@ -106,6 +138,19 @@ export default function (props: Props) {
 						/>
 					</div>
 				</div>
+
+				{starterKit !== 'none' && (
+					<div className="FormRow FormRow__Half FormRow__Center __MarginTop_20">
+						<div className="FormField">
+							<label>Stack</label>
+							<FlySelect
+								value={stack}
+								options={stackOptions}
+								onChange={updateStack}
+							/>
+						</div>
+					</div>
+				)}
 			</div>
 
 			<PrimaryButton
