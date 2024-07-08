@@ -15,9 +15,13 @@
     "url": "https://github.com/kermage/local-addon-laravel"
   },
   "productName": "Laravel",
+  "bgColor": "#f55247",
+  "icon": "icon.svg",
   "renderer": "dist/renderer.js",
   "main": "dist/main.js",
   "scripts": {
+    "prepare": "pnpm clean && pnpm build",
+    "clean": "rm -rf ./dist",
     "dev": "tsc --watch",
     "build": "tsc"
   },
